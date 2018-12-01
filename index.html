@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Карты</title>
+
+	<meta name="viewport" content="initial-scale=1.0, width=device-width" charset="utf-8" />
+
+
+	<script src="http://js.api.here.com/v3/3.0/mapsjs-core.js" 
+      type="text/javascript" charset="utf-8"></script>
+	<script src="http://js.api.here.com/v3/3.0/mapsjs-mapevents.js" type="text/javascript" charset="utf-8"></script>
+    <script src="http://js.api.here.com/v3/3.0/mapsjs-service.js" 
+      type="text/javascript" charset="utf-8"></script>
+    <script src="http://js.api.here.com/v3/3.0/mapsjs-ui.js" 
+      type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" charset="UTF-8"
+      src="http://js.api.here.com/v3/3.0/mapsjs-places.js"></script>
+    <link rel="stylesheet" type="text/css" 
+      href="http://js.api.here.com/v3/3.0/mapsjs-ui.css" />
+
+	<link href="css/main.css" rel="stylesheet">
+
+</head> 
+<body>
+	 <div id="mapContainer"></div>
+
+	<script type="text/javascript">
+
+		var platform = new H.service.Platform({
+  			'app_id': '4XeWgoNVvORJz4lkZQhv',
+  			'app_code': 'vdYLl9afBxZoVYtRG7jbaQ'
+		});
+
+		// Obtain the default map types from the platform object:
+		var defaultLayers = platform.createDefaultLayers();
+
+		// Instantiate (and display) a map object:
+		var map = new H.Map(
+		  document.getElementById('mapContainer'),
+		  defaultLayers.normal.map,
+		  {
+		    zoom: 13,
+		    center: { lat: 55.9864196, lng: 37.1320735 }
+		  });
+
+		// Enable the event system on the map instance:
+		var mapEvents = new H.mapevents.MapEvents(map);
+
+		// Instantiate the default behavior, providing the mapEvents object: 
+		var behavior = new H.mapevents.Behavior(mapEvents);
+
+
+		var group = new H.map.Group();
+
+		// Create the default UI components:
+		var ui = H.ui.UI.createDefault(map, platform.createDefaultLayers());
+
+		// Add the group object to the map:
+		map.addObject(group);
+
+		// Obtain a Search object through which to submit search
+		// requests:
+		var search = new H.places.Search(platform.getPlacesService()),
+			searchResult, error;
+
+		// Define search parameters:
+		var params = {
+			// Plain text search for places with the word "hotel"
+			// associated with them:
+			'q': 'post office',
+			//  Search in the Chinatown district in San Francisco:
+			'at': '55.9864196,37.1320735'
+		};
+
+		// Define a callback function to handle data on success:
+		function onResult(data) {
+			addPlacesToMap(data.results);
+		}
+
+		// Define a callback function to handle errors:
+		function onError(data) {
+			error = data;
+		}
+
+		// This function adds markers to the map, indicating each of
+		// the located places:
+		function addPlacesToMap(result) {
+			group.addObjects(result.items.map(function (place) {
+				var marker = new H.map.Marker({lat: place.position[0],
+				lng: place.position[1]})
+			return marker;
+			}));
+		}
+
+		// Run a search request with parameters, headers (empty), and
+		// callback functions:
+
+		function searcPost(lat, lng){
+			var params = {
+				// Plain text search for places with the word "hotel"
+				// associated with them:
+				'q': 'post office',
+				//  Search in the Chinatown district in San Francisco:
+				'at': lat.toString() + ',' +  lng.toString()
+			};
+
+			search.request(params, {}, onResult, onError);
+		}
+		
+
+	</script>
+</body>
+</html>
